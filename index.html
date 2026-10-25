@@ -83,7 +83,7 @@
                 <tbody>
                   <tr><td><a href="#sdk"><strong>SDK</strong></a></td><td>TypeScript backend, bot, script, Next.js API route</td><td><code>sdk.quote()</code> → <code>build()</code> → sign → <code>send()</code></td></tr>
                   <tr><td><a href="#api"><strong>REST API</strong></a></td><td>Any language: Python, Go, Rust, mobile, no-code</td><td><code>POST /quote</code> → <code>/quote/build</code> → sign → <code>/send</code></td></tr>
-                  <tr><td><a href="#contracts"><strong>Router contract</strong></a></td><td>Your Soroban contract must swap on-chain by itself</td><td><code>swap_exact_tokens_for_tokens</code> from Rust</td></tr>
+                  <tr><td><a href="#contracts"><strong>Router contract</strong></a></td><td>Your Soroban contract must swap on-chain by itself (cross-contract call)</td><td><code>swap_exact_tokens_for_tokens</code> from Rust</td></tr>
                   <tr><td><a href="https://app.soroswap.finance" target="_blank" rel="noopener"><strong>Soroswap app</strong></a></td><td>Seed a pool or swap by hand for your demo</td><td>Nothing, just click</td></tr>
                 </tbody>
               </table>
@@ -169,20 +169,37 @@
       </section>
 
       <section id="contracts" class="section">
-        <h2>Router contract (Soroban)</h2>
+        <h2>Swap from your contract (cross-contract calls)</h2>
         <p class="section-lede">
           Use this when a contract has to swap with nobody signing off-chain: a vault that rebalances, a DCA or savings contract,
-          a game treasury paying out in USDC. The router is the same one the API uses for Soroswap pools.
-          Source: <a href="https://github.com/soroswap/core" target="_blank" rel="noopener">soroswap/core</a>.
+          a game treasury paying out in USDC. Your Soroban contract calls the router directly, the same router the API uses
+          for Soroswap pools. Source: <a href="https://github.com/soroswap/core" target="_blank" rel="noopener">soroswap/core</a>.
         </p>
         <h3>Declare a client for the functions you call</h3>
+        <p>
+          A <code>#[contractclient]</code> trait with only the functions you need is the lightest option. For the full interface
+          with every type, fetch the WASM and use <code>contractimport!</code> instead:
+        </p>
         <div data-snippet="contractClient"></div>
+        <div data-snippet="contractImport"></div>
         <h3>Swap tokens your contract holds</h3>
         <div data-snippet="contractSwap"></div>
         <p class="note">
           The router calls <code>to.require_auth()</code> and pulls the input from <code>to</code>. When <code>to</code> is a user instead of your contract,
           the user signs the transaction and you skip <code>authorize_as_current_contract</code>.
           Simulate first with <code>router_get_amounts_out</code> to pick a safe <code>amount_out_min</code>.
+        </p>
+        <h3>Why the pre-authorization</h3>
+        <p>
+          When your contract calls the router, the router's <code>to.require_auth()</code> passes on its own: your contract is
+          the direct caller. The router then calls the token's <code>transfer</code> on your contract's funds, one level deeper,
+          and that check only passes if your contract authorized that exact call beforehand. Without it, simulation fails with
+          <code>Error(Auth, InvalidAction)</code>.
+        </p>
+        <p class="note">
+          <code>env.mock_all_auths()</code> in unit tests hides a missing pre-auth, so deploy to testnet and run the swap once
+          before your demo. Building on DeFindex too? A contract can swap here and deposit the output into a vault the same way:
+          see <a href="https://hackathons.defindex.io/#contracts">hackathons.defindex.io</a>.
         </p>
       </section>
 
@@ -197,6 +214,7 @@
           <li><strong>Trustlines.</strong> To receive a classic Stellar asset (like USDC), the receiving G... account needs a trustline first.</li>
           <li><strong>Liquidity must match the pool ratio.</strong> Read the pool with <code>getPoolByTokens</code> first, or simulation fails.</li>
           <li><strong>Don't hardcode testnet addresses.</strong> Testnet resets. Ask <code>GET /api/testnet/router</code>.</li>
+          <li><strong><code>Error(Auth, InvalidAction)</code> from your contract.</strong> The router pulls tokens from your contract one call deeper. Pre-authorize that <code>transfer</code> with <code>authorize_as_current_contract</code>, same amount and same pair.</li>
           <li><strong>Platform fees.</strong> On mainnet, set <code>feeBps</code> on the quote and <code>referralId</code> (your wallet) on the build to earn a cut of every swap your app routes.</li>
         </ul>
       </section>

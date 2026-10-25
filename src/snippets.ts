@@ -14,6 +14,7 @@ export type SnippetId =
   | 'apiAddresses'
   | 'walletSign'
   | 'contractClient'
+  | 'contractImport'
   | 'contractSwap'
   | 'faucet'
   | 'skill'
@@ -234,6 +235,16 @@ pub trait SoroswapRouter {
 }`,
   }),
 
+  contractImport: (net: NetworkConfig) => ({
+    lang: 'rust',
+    code: `// stellar contract fetch --id ${net.router} --network ${net.id} -o soroswap_router.wasm
+// The path is relative to your Cargo.toml. Generates soroswap_router::Client and all types.
+mod soroswap_router {
+    soroban_sdk::contractimport!(file = "soroswap_router.wasm");
+}`,
+  }),
+
+  // Ran from a deployed contract on testnet (XLM -> USDC) on 2026-10-25.
   contractSwap: (net: NetworkConfig) => ({
     lang: 'rust',
     code: `use soroban_sdk::{
