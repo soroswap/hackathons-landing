@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soroswap for Hackers</title>
+    <meta name="description" content="Everything you need to build on Soroswap at a hackathon: API keys, testnet setup, the SDK, the REST API and the router contract, with use cases." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@500;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="#top" class="brand"><img src="/logo.svg" alt="Soroswap" height="40" /><span class="brand-tag">hackathons</span></a>
+      <nav class="nav">
+        <a href="#start">Start</a>
+        <a href="#use-cases">Use cases</a>
+        <a href="#sdk">SDK</a>
+        <a href="#api">API</a>
+        <a href="#contracts">Contracts</a>
+        <a href="#gotchas">Gotchas</a>
+      </nav>
+      <div class="net-toggle" role="radiogroup" aria-label="Network">
+        <button type="button" role="radio" data-net-btn="testnet">Testnet</button>
+        <button type="button" role="radio" data-net-btn="mainnet">Mainnet</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <p class="eyebrow">Hacker kit · Stellar · Soroban</p>
+        <h1>Swap any token on Stellar<br /><span class="accent">from your hack, in one afternoon.</span></h1>
+        <p class="lede">
+          Soroswap is the AMM and swap aggregator on Stellar. Use our API, TypeScript SDK or router
+          contract to add swaps, prices, balances and liquidity to whatever you are building this weekend.
+          Every code sample on this page follows the network switch at the top right.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://api.soroswap.finance/register" target="_blank" rel="noopener">Get an API key</a>
+          <a class="btn" href="#start">5-minute quickstart</a>
+          <a class="btn" href="https://github.com/soroswap/sdk/tree/main/skills/soroswap-sdk" target="_blank" rel="noopener">AI agent skill</a>
+        </div>
+        <ul class="hero-links">
+          <li><a href="https://api.soroswap.finance/docs" target="_blank" rel="noopener">API reference</a></li>
+          <li><a href="https://github.com/soroswap/sdk" target="_blank" rel="noopener">@soroswap/sdk</a></li>
+          <li><a href="https://docs.soroswap.finance" target="_blank" rel="noopener">Docs</a></li>
+          <li><a href="https://faucet.soroswap.finance" target="_blank" rel="noopener">Testnet faucet</a></li>
+          <li><a href="https://app.soroswap.finance" target="_blank" rel="noopener">App</a></li>
+          <li><a href="https://discord.gg/8qHbAYmZ8g" target="_blank" rel="noopener">Discord</a></li>
+        </ul>
+      </section>
+
+      <section id="start" class="section">
+        <h2>Quickstart</h2>
+        <ol class="steps">
+          <li>
+            <h3>Get an API key</h3>
+            <p>
+              Create an account at <a href="https://api.soroswap.finance/register" target="_blank" rel="noopener">api.soroswap.finance/register</a>,
+              log in at <a href="https://api.soroswap.finance/login" target="_blank" rel="noopener">/login</a> and generate a key. It starts with
+              <code>sk_</code> and goes in every request as <code>Authorization: Bearer sk_...</code>.
+              Stuck? Find the Soroswap team at the venue or ping us on Discord.
+            </p>
+          </li>
+          <li>
+            <h3>Get a wallet and some funds</h3>
+            <p data-show="testnet">
+              Install <a href="https://www.freighter.app" target="_blank" rel="noopener">Freighter</a> and switch it to Testnet.
+              Fund the account with Friendbot, then mint test tokens.
+            </p>
+            <p data-show="mainnet">
+              Mainnet uses real money. Keep amounts tiny, use a fresh wallet, and never commit a secret key.
+              Build on testnet first, then flip the switch above.
+            </p>
+            <div data-snippet="faucet" data-show="testnet"></div>
+          </li>
+          <li>
+            <h3>Pick your tool</h3>
+            <div class="table-wrap">
+              <table class="pick">
+                <thead><tr><th>Use</th><th>When</th><th>You write</th></tr></thead>
+                <tbody>
+                  <tr><td><a href="#sdk"><strong>SDK</strong></a></td><td>TypeScript backend, bot, script, Next.js API route</td><td><code>sdk.quote()</code> → <code>build()</code> → sign → <code>send()</code></td></tr>
+                  <tr><td><a href="#api"><strong>REST API</strong></a></td><td>Any language: Python, Go, Rust, mobile, no-code</td><td><code>POST /quote</code> → <code>/quote/build</code> → sign → <code>/send</code></td></tr>
+                  <tr><td><a href="#contracts"><strong>Router contract</strong></a></td><td>Your Soroban contract must swap on-chain by itself</td><td><code>swap_exact_tokens_for_tokens</code> from Rust</td></tr>
+                  <tr><td><a href="https://app.soroswap.finance" target="_blank" rel="noopener"><strong>Soroswap app</strong></a></td><td>Seed a pool or swap by hand for your demo</td><td>Nothing, just click</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
+          <li>
+            <h3>Let your AI agent do the typing</h3>
+            <p>
+              We ship an agent skill for Claude Code, Cursor, Codex and friends. It knows the SDK, the signing flow and the common mistakes.
+              Read it on <a href="https://github.com/soroswap/sdk/tree/main/skills/soroswap-sdk" target="_blank" rel="noopener">GitHub</a> or install it:
+            </p>
+            <div data-snippet="skill"></div>
+          </li>
+        </ol>
+      </section>
+
+      <section id="use-cases" class="section">
+        <h2>What can you build?</h2>
+        <p class="section-lede">Ideas we would love to see, and the calls each one needs.</p>
+        <div class="cards" id="use-case-cards"></div>
+      </section>
+
+      <section class="section">
+        <h2>Network cheat sheet</h2>
+        <p class="section-lede">Values for <strong data-net-field="label"></strong>. Addresses can change after a testnet reset, so resolve them from the API at runtime.</p>
+        <div class="table-wrap">
+          <table class="facts">
+            <tbody>
+              <tr><th>API base</th><td><code>https://api.soroswap.finance</code> + <code>?network=<span data-net-field="id"></span></code></td></tr>
+              <tr><th>SDK network</th><td><code>SupportedNetworks.<span data-net-field="sdkEnum"></span></code></td></tr>
+              <tr><th>Passphrase</th><td><code data-net-field="passphrase"></code> (<code>Networks.<span data-net-field="stellarEnum"></span></code>)</td></tr>
+              <tr><th>Router</th><td><code class="copyable" data-net-field="router"></code></td></tr>
+              <tr><th>Factory</th><td><code class="copyable" data-net-field="factory"></code></td></tr>
+              <tr><th>XLM (SAC)</th><td><code class="copyable" data-net-field="xlm"></code></td></tr>
+              <tr><th>USDC</th><td><code class="copyable" data-net-field="usdc"></code></td></tr>
+              <tr><th>Protocols</th><td><code data-net-field="protocols"></code></td></tr>
+              <tr><th>Explorer</th><td><a data-net-link="explorer" target="_blank" rel="noopener">stellar.expert</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note" data-show="testnet">On testnet, quotes route through Soroswap pools only. There is no SDEX path and no aggregator fee. More testnet tokens: <code>GET /api/tokens</code>.</p>
+        <p class="note" data-show="mainnet">On mainnet, one quote searches Soroswap, Aqua, Phoenix, Comet, Sushi and the Stellar DEX (SDEX) for the best route. Leave out <code>sdex</code> when the signer is a smart wallet (a C... address).</p>
+      </section>
+
+      <section id="sdk" class="section">
+        <h2>TypeScript SDK</h2>
+        <p class="section-lede">
+          <code>@soroswap/sdk</code> is a typed client for the API. It never signs: build methods return unsigned XDR, you sign, then call <code>send()</code>.
+          It is built for servers (Node 22+), so your API key stays out of the browser.
+        </p>
+        <h3>Install and set up</h3>
+        <div data-snippet="install"></div>
+        <div data-snippet="sdkSetup"></div>
+        <h3>Swap: quote → build → sign → send</h3>
+        <div data-snippet="sdkSwap"></div>
+        <h3>Read-only data, no signing</h3>
+        <div data-snippet="sdkRead"></div>
+        <h3>Liquidity</h3>
+        <div data-snippet="sdkLiquidity"></div>
+        <h3>Signing in the browser</h3>
+        <p>For a dApp, keep the SDK in a small backend (Next.js route, Express, Hono). The browser gets the XDR, the user signs in their wallet, and the backend submits.</p>
+        <div data-snippet="walletSign"></div>
+      </section>
+
+      <section id="api" class="section">
+        <h2>REST API</h2>
+        <p class="section-lede">
+          Plain HTTPS and JSON, from any language. Add <code>?network=<span data-net-field="id"></span></code> to each call.
+          Amounts are strings in the token's smallest unit (7 decimals: <code>10000000</code> = 1 XLM).
+          Full reference: <a href="https://api.soroswap.finance/docs" target="_blank" rel="noopener">ReDoc</a> or
+          <a href="https://api.soroswap.finance/documentation" target="_blank" rel="noopener">Swagger</a>.
+        </p>
+        <h3>1 · Quote</h3>
+        <div data-snippet="apiQuote"></div>
+        <h3>2 · Build the transaction</h3>
+        <div data-snippet="apiBuild"></div>
+        <h3>3 · Sign, then send</h3>
+        <div data-snippet="apiSend"></div>
+        <h3>Prices, balances, pools</h3>
+        <div data-snippet="apiRead"></div>
+        <h3>Contract addresses</h3>
+        <div data-snippet="apiAddresses"></div>
+      </section>
+
+      <section id="contracts" class="section">
+        <h2>Router contract (Soroban)</h2>
+        <p class="section-lede">
+          Use this when a contract has to swap with nobody signing off-chain: a vault that rebalances, a DCA or savings contract,
+          a game treasury paying out in USDC. The router is the same one the API uses for Soroswap pools.
+          Source: <a href="https://github.com/soroswap/core" target="_blank" rel="noopener">soroswap/core</a>.
+        </p>
+        <h3>Declare a client for the functions you call</h3>
+        <div data-snippet="contractClient"></div>
+        <h3>Swap tokens your contract holds</h3>
+        <div data-snippet="contractSwap"></div>
+        <p class="note">
+          The router calls <code>to.require_auth()</code> and pulls the input from <code>to</code>. When <code>to</code> is a user instead of your contract,
+          the user signs the transaction and you skip <code>authorize_as_current_contract</code>.
+          Simulate first with <code>router_get_amounts_out</code> to pick a safe <code>amount_out_min</code>.
+        </p>
+      </section>
+
+      <section id="gotchas" class="section">
+        <h2>Gotchas that eat hackathon hours</h2>
+        <ul class="gotchas">
+          <li><strong>Amounts are integers with 7 decimals.</strong> 1 XLM = <code>10000000</code>. The SDK wants <code>bigint</code> (<code>10_000_000n</code>); the API wants a string.</li>
+          <li><strong>Two network enums.</strong> <code>SupportedNetworks.TESTNET</code> (Soroswap SDK) for SDK calls, <code>Networks.TESTNET</code> (Stellar SDK) when parsing XDR.</li>
+          <li><strong>A bad or missing key returns 403</strong>, not 401. Check the <code>Bearer </code> prefix.</li>
+          <li><strong>SDK errors are not <code>Error</code>s.</strong> On an HTTP error the SDK rejects with the API's response body, so log the whole object, not <code>e.message</code>.</li>
+          <li><strong>Your key in the browser is public.</strong> Fine for a weekend demo, but proxy calls through a backend for anything real.</li>
+          <li><strong>Trustlines.</strong> To receive a classic Stellar asset (like USDC), the receiving G... account needs a trustline first.</li>
+          <li><strong>Liquidity must match the pool ratio.</strong> Read the pool with <code>getPoolByTokens</code> first, or simulation fails.</li>
+          <li><strong>Don't hardcode testnet addresses.</strong> Testnet resets. Ask <code>GET /api/testnet/router</code>.</li>
+          <li><strong>Platform fees.</strong> On mainnet, set <code>feeBps</code> on the quote and <code>referralId</code> (your wallet) on the build to earn a cut of every swap your app routes.</li>
+        </ul>
+      </section>
+
+      <section class="section resources">
+        <h2>Resources</h2>
+        <div class="res-grid">
+          <a class="res" href="https://github.com/soroswap/sdk/tree/main/skills/soroswap-sdk" target="_blank" rel="noopener"><strong>SDK agent skill</strong><span>npx skills add soroswap/sdk</span></a>
+          <a class="res" href="https://github.com/soroswap/sdk" target="_blank" rel="noopener"><strong>SDK on GitHub</strong><span>@soroswap/sdk source</span></a>
+          <a class="res" href="https://api.soroswap.finance/docs" target="_blank" rel="noopener"><strong>API reference</strong><span>Every endpoint and schema</span></a>
+          <a class="res" href="https://docs.soroswap.finance" target="_blank" rel="noopener"><strong>Soroswap docs</strong><span>Concepts and guides</span></a>
+          <a class="res" href="https://github.com/soroswap/core" target="_blank" rel="noopener"><strong>Core contracts</strong><span>Factory, pair, router</span></a>
+          <a class="res" href="https://github.com/paltalabs/stellar-workshop" target="_blank" rel="noopener"><strong>Stellar workshop</strong><span>Contract + client, step by step</span></a>
+          <a class="res" href="https://faucet.soroswap.finance" target="_blank" rel="noopener"><strong>Testnet faucet</strong><span>Soroswap test tokens</span></a>
+          <a class="res" href="https://lab.stellar.org" target="_blank" rel="noopener"><strong>Stellar Lab</strong><span>Accounts, XDR, contracts</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <img src="/logo.svg" alt="Soroswap" height="32" />
+      <p>Built by <a href="https://paltalabs.io" target="_blank" rel="noopener">PaltaLabs</a> · <a href="https://discord.gg/8qHbAYmZ8g" target="_blank" rel="noopener">Discord</a> · <a href="https://x.com/SoroswapFinance" target="_blank" rel="noopener">X</a></p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
