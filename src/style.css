@@ -276,20 +276,56 @@ details .snippet { margin-top: 12px; }
 .res strong { font: 700 22px/1.1 var(--font-title); }
 .res span { color: var(--muted); font-size: 13px; }
 
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  max-width: 1120px;
+/* Sibling footer, same structure as hackathons.defindex.io so the three pages read as one set */
+.siblings {
+  width: calc(100% - 32px);
+  max-width: 1088px;
   margin: 40px auto 0;
-  padding: 32px 16px 48px;
+  padding: 72px 0 40px;
   border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 14px;
 }
-.footer p { margin: 0; }
+.siblings h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 900; margin-bottom: 28px; }
+.sibling-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.sibling {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-height: 220px;
+  padding: 32px;
+  border-radius: 20px;
+  color: #fff;
+  transition: transform 0.2s;
+}
+.sibling:hover { text-decoration: none; transform: translateY(-3px); }
+.sibling img { height: 36px; width: auto; }
+.sibling-url { margin-top: auto; font-weight: 600; }
+/* PaltaLabs colours, from paltalabs/landing-page logo.svg and tailwind.config.js */
+.sibling-paltalabs { background: #12133a; box-shadow: inset 0 0 0 1px #5557f5; }
+.sibling-paltalabs .sibling-url { color: #aff26e; }
+/* DeFindex colours, from projects/defindex/branding/brand-guide.md */
+.sibling-defindex { background: #014751; box-shadow: inset 0 0 0 1px #dec9f4; }
+.sibling-defindex .sibling-url { color: #d3ffb4; }
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 56px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+.colophon img { border-radius: 6px; }
+.colophon-links { display: flex; gap: 16px; margin-left: auto; }
+
+@media (max-width: 760px) {
+  .sibling-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sibling { transition: none; }
+  .sibling:hover { transform: none; }
+}
 
 @media (max-width: 860px) {
   .nav { display: none; }
